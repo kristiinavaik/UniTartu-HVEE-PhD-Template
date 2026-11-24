@@ -129,27 +129,10 @@ pdflatex main.tex
 pdflatex main.tex
 ```
 
-Tectonicuga (käivitab viidete jaoks vajalikud läbimised automaatselt):
+## Litsents
 
-```sh
-tectonic main.tex
-```
+See mallikohandus on avaldatud [Creative Commonsi „Autorile viitamine 4.0 Rahvusvaheline“ litsentsi (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/) alusel.
 
-Mall ei vaja `minted` paketti, shell-escape'i, Pythonit ega glossaries'i abiprotsessi.
+Mall põhineb UniTartuCS doktoritöö mallil, mis on samuti avaldatud CC BY 4.0 litsentsi alusel. Algautorid ja panustajad on nimetatud eespool.
 
-## Päritolu ja muudatused
-
-Aluseks on kasutaja antud doktoritööprojekti `phdunitartu.cls` ja vormistusseaded.
-Algse LaTeXi klassi ja malli autor on Reimo Palm; TÜ arvutiteaduse instituudi
-malli kaasautorid on Dmytro Fishman, Novin Sharoudi, Kalmer Apinis ja Jaak Vilo.
-Algse malli viide: https://gitlab.cs.ut.ee/unitartucs-thesis-templates/phd-latex-template
-
-Puhastamisel (2026-11-23) asendati isiklik sisu ja kontaktandmed kohatäitjatega,
-eemaldati autori andmestikud, joonised, CV-d, kommentaarikäsud ja üleliigsed
-paketid, eraldati metaandmed ning muudeti rahastuse tekst ja avaldamisaasta
-seadistatavaks. Artiklipõhise töö loend kasutab nüüd sama viitamislahendusega
-sobivat lihtsat struktuuri; algprojekti aktiivsed biblatex-käsud eemaldati.
-Põhiküljendust ja klassi pealkirjade loogikat ei kujundatud ümber.
-
-Mõlema tööliigi näidist kompileeriti Tectonicuga ning PDF-ide küljendus ja
-viited kontrolliti. Näidis ei vaja algprojekti faile.
+Tartu Ülikooli eesti ja üldkeeleteaduse instituudile kohandanud Kristiina Vaik.
