@@ -1,0 +1,46 @@
+% Included only for COLLECTION. Replace the demonstration records and pages.
+\unnumberedchapter{Publications}
+
+\clearpage
+\thispagestyle{empty}
+\phantomsection
+\addcontentsline{toc}{section}{I. [First article title]}
+\begin{center}
+\LARGE\bfseries I
+\end{center}
+\vfill
+\noindent [Author(s)]. [Year]. [First article title]. [Journal or volume],
+[pages or article number]. [DOI].
+
+\noindent [Add the applicable permission or licence statement.]
+\vfill
+\clearpage
+\IfFileExists{publications/article-1.pdf}{%
+  \includepdf[pages=-,pagecommand={\thispagestyle{plain}}]{publications/article-1.pdf}%
+}{%
+  \chapter*{Article I: demonstration page}
+  [Replace this page by adding your article as publications/article-1.pdf.
+  No article has been included in this example.]
+}
+
+\clearpage
+\thispagestyle{empty}
+\phantomsection
+\addcontentsline{toc}{section}{II. [Second article title]}
+\begin{center}
+\LARGE\bfseries II
+\end{center}
+\vfill
+\noindent [Author(s)]. [Year]. [Second article title]. [Journal or volume],
+[pages or article number]. [DOI].
+
+\noindent [Add the applicable permission or licence statement.]
+\vfill
+\clearpage
+\IfFileExists{publications/article-2.pdf}{%
+  \includepdf[pages=-,pagecommand={\thispagestyle{plain}}]{publications/article-2.pdf}%
+}{%
+  \chapter*{Article II: demonstration page}
+  [Replace this page by adding your article as publications/article-2.pdf.
+  No article has been included in this example.]
+}

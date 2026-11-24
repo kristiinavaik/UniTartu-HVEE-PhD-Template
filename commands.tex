@@ -1,0 +1,24 @@
+% ADDITIONAL PACKAGES
+% Add package-loading lines here, before the custom commands below.
+% Remove the leading % to enable an example you need.
+%
+% Example: load TikZ first, then choose its libraries.
+% \usepackage{tikz}
+% \usetikzlibrary{tikzmark, calc}
+%
+% Example package-loading syntax (pdfpages is ALREADY loaded by phdstyle.sty,
+% so you do not need to enable this line in this template):
+% \usepackage{pdfpages}
+
+% CUSTOM COMMANDS AND ENVIRONMENTS
+% Example: a simple numbered linguistic example (continuous numbering).
+\newcounter{lingexample}
+\newenvironment{lingexample}[1]{%
+  \refstepcounter{lingexample}\label{#1}%
+  \begin{list}{(\thelingexample)}{%
+    \setlength{\leftmargin}{10mm}%
+    \setlength{\labelwidth}{8mm}%
+    \setlength{\labelsep}{2mm}%
+    \setlength{\topsep}{6pt}%
+  }\item
+}{\end{list}}

@@ -1,0 +1,61 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{phdstyle}[2026/11/23 v1.4 Clean doctoral thesis example]
+% Layout adapted from the supplied UniTartu PhD project; see README.md.
+
+\RequirePackage{iftex}
+\ifPDFTeX
+  \RequirePackage[utf8]{inputenc}
+\fi
+\RequirePackage[T1]{fontenc}
+\RequirePackage{mathptmx}
+\RequirePackage[estonian,english]{babel}
+\RequirePackage{csquotes}
+\RequirePackage{amsmath}
+\RequirePackage{amssymb}
+\RequirePackage{graphicx}
+\RequirePackage{booktabs}
+\RequirePackage{array}
+\RequirePackage{pdfpages}
+\RequirePackage[hang,flushmargin]{footmisc}
+\RequirePackage[font=normalsize]{caption}
+
+% Retain the supplied project's page size, text block, fonts and headings.
+\renewcommand{\sfdefault}{phv}
+\setlength\topmargin{-2.5mm}
+\setlength\headheight{0mm}
+\setlength\headsep{0mm}
+\setlength\textheight{43\baselineskip}
+\setlength\footskip{13.5mm}
+\setlength\textwidth{125mm}
+\setlength\oddsidemargin{\dimexpr(\paperwidth-\textwidth)/2-1in\relax}
+\setlength\evensidemargin{\oddsidemargin}
+
+% Keep the supplied project's natbib + dcu author-year setup.
+% This is a working example, not a claim of compliance with a prescribed style.
+\RequirePackage[authoryear]{natbib}
+\providecommand{\harvardand}{\&}
+\renewcommand{\harvardand}{\&}
+\setcitestyle{notesep={: },round,aysep={},yysep={,}}
+
+\RequirePackage[bookmarks,colorlinks,
+  linkcolor=black,citecolor=black,filecolor=black,urlcolor=black,
+  pdfhighlight=/O,pdfstartview=FitH,unicode]{hyperref}
+
+% Unnumbered chapters that still appear in the table of contents.
+\newcommand{\unnumberedchapter}[1]{%
+  \chapter*{#1}%
+  \phantomsection
+  \addcontentsline{toc}{chapter}{#1}%
+}
+
+% Number footnotes and equations continuously as in the supplied project.
+\counterwithout{footnote}{chapter}
+\counterwithout{equation}{chapter}
+% Restore per-chapter equation resets for appendices while retaining A.1 form.
+\let\phdstyle@appendix\appendix
+\renewcommand{\appendix}{%
+  \phdstyle@appendix
+  \counterwithin*{equation}{chapter}%
+  \setcounter{equation}{0}%
+}
+\endinput

@@ -1,0 +1,41 @@
+% Clean doctoral thesis example: Institute of Estonian and General Linguistics.
+% Read README.md first. Compile this file with pdfLaTeX + BibTeX.
+\documentclass{phdunitartu}
+\usepackage{phdstyle}
+
+% Choose MONOGRAPH or COLLECTION. Both compile without external article PDFs.
+\ThesisType{MONOGRAPH}
+\input{metadata}
+
+% Add any subject-specific packages and commands in this file.
+\input{commands}
+
+\begin{document}
+\selectlanguage{english}
+\maketitle
+
+% Optional front matter: remove the corresponding input to omit an item.
+% \input{sections/abstract} not used in IEGL
+\input{sections/acknowledgements}
+\tableofcontents
+\listoffigures
+\listoftables
+\input{sections/abbreviations}
+\IfThesisTypeIsCollection{\input{sections/publications-list}}{}
+
+% Main chapters: rename or extend as needed; keep paths consistent.
+\input{sections/introduction}
+\input{sections/background}
+\input{sections/methods}
+\input{sections/results}
+\input{sections/discussion}
+\input{sections/conclusion}
+\input{sections/bibliography}
+
+\appendix
+\input{sections/appendix}
+\input{sections/summary-estonian}
+\IfThesisTypeIsCollection{\input{sections/publications}}{}
+\input{sections/cv-en}
+\input{sections/cv-et}
+\end{document}
