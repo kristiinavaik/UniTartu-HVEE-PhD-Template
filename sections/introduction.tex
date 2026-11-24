@@ -10,6 +10,24 @@ of the thesis. All prose and references in this example are placeholders.]
   \item {}[Second research question.]
 \end{enumerate}
 
+\section{Comments}
+
+During drafting, you can use comments to flag unclear ideas, leave
+reminders, and exchange feedback with your supervisors. Named comment
+commands make it easy to see who added each note.
+
+\kristiina{This is a fuzzy idea.}
+\supervisor{Please elaborate.}
+
+The comment commands are defined in \texttt{commands.tex} using the
+\texttt{todonotes} package. You can add more commands or change the
+names and colours to suit your collaborators.
+
+Before submitting the thesis, remove the comments or hide them by
+replacing the package-loading line in \texttt{commands.tex} with
+\verb|\usepackage[disable]{todonotes}|.
+
+
 \section{Structure of the thesis}
 [Explain the relationship between the chapters or included publications.]
 Chapter~\ref{chap:methods} demonstrates a table, figure and linguistic example.
