@@ -144,17 +144,6 @@ pdflatex main.tex
 pdflatex main.tex
 ```
 
-With Tectonic, which automatically runs the passes needed to resolve references:
-
-```sh
-tectonic main.tex
-```
-
-The template does not require `minted`, shell escape, Python or a separate
-`glossaries` helper process.
-
-
-
 ## License
 
 This template adaptation is distributed under the
