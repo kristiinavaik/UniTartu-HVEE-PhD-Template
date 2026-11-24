@@ -1,7 +1,7 @@
 # Doctoral thesis example template for the Institute of Estonian and General Linguistics
 
-A cleaned LaTeX example template based on an existing doctoral thesis project.
-The template contains placeholders rather than the text of a completed thesis.
+A LaTeX example template for a doctoral thesis project.
+The template contains placeholders.
 The main language is English; the Estonian summary and curriculum vitae are
 provided in separate files.
 
