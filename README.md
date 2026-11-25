@@ -212,7 +212,7 @@ dissertation series information and publication identifiers. These fields may
 remain as placeholders while the author writes the thesis. The Press's guidance, including a link to a suitable LaTeX template,
 is available in its [manuscript preparation guidelines](https://tyk.ee/et/nouded-kasikirjadele).
 
-The formatting rules from the supplied general bachelor's and master's thesis
+The formatting rules of the general IEGL's bachelor's and master's thesis
 guidelines have not been automatically applied to this doctoral thesis template.
 
 ## Compiling locally
