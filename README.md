@@ -25,7 +25,7 @@ settings, cleaned examples and documentation.
 
 ## Quick start in Overleaf
 
-1. Upload the ZIP file to Overleaf: **New Project > Upload Project**.
+1. On GitHub, choose **Code > Download ZIP**, then upload that file to Overleaf: **New Project > Upload Project**.
 2. Set `main.tex` as the main document and select **pdfLaTeX** as the compiler.
 3. Complete `metadata.tex` with the author name, thesis titles and supervisor(s).
    Leave the opponent, defence and publication fields open for the publisher.
@@ -55,7 +55,7 @@ Use `commands.tex` to add your own packages and commands.
 | `sections/` | Chapters, summary, appendices, CVs and publication sections. |
 | `bibliographies/references.bib` | Demonstration references to replace with real sources. |
 | `figures/` | Your image files. |
-| `publications/` | Article PDFs for a collection-based thesis. |
+| `publications/` | Article PDFs and the single article-data file `articles.tex`. |
 
 ## Editing the content
 
@@ -65,7 +65,8 @@ Use `commands.tex` to add your own packages and commands.
 - For an unnumbered chapter with a table of contents entry, use
   `\unnumberedchapter{Title}`. For one without a contents entry, use
   `\chapter*{Title}`.
-- Add your own packages and commands to `commands.tex`.
+- Add your own packages and commands to `commands.tex`. It is loaded before
+  `hyperref`, so packages that need to precede `hyperref` can go there.
 - Place images in `figures/` and replace the example frame with an
   `\includegraphics` command.
 - Examples of a table, figure and numbered linguistic example are provided in
@@ -75,24 +76,107 @@ Use `commands.tex` to add your own packages and commands.
   glossary-generation step.
 - The Estonian sections use the `otherlanguage` environment; the main document
   language is English. For a thesis written entirely in Estonian, adjust the
-  main language, chapter titles, title-page wording and the summary in another
-  language as appropriate.
+  main language, chapter titles and the summary in another language.
+  Title-page wording can be changed in `metadata.tex` as documented below.
+- `sections/abstract.tex` is an optional example, disabled in `main.tex` by
+  default. Uncomment its input only if an abstract is needed.
+- Appendix references return only the letter: write
+  `Appendix~\ref{app:example}` to produce "Appendix A".
+
+## Metadata and supervisors
+
+In `metadata.tex`, add one command per supervisor:
+
+```latex
+\thesissupervisor{Prof.}{First supervisor}{University of Tartu}
+\thesissupervisor{Dr.}{Second supervisor}{Another institution}
+```
+
+Each call adds a person; it does not replace the previous person. Arguments are
+academic title, name and institution. No table separators (`&` or `\\`) are
+needed. The heading automatically changes from singular to plural. The
+publisher can use `\thesisopponent` in the same way; keep its example placeholders
+open while writing.
+
+The preferred metadata setters use the `thesis` prefix: `\thesisseriesname`,
+`\thesisseriesnumber`, `\thesisissn`, `\thesisisbnprint`, `\thesisisbnpdf`,
+`\thesisaccepted`, `\thesisdefencedate`, `\thesisdefencetime`,
+`\thesisdefencevenue`, `\thesisyear`, `\thesisdegree` and `\thesisfunding`.
+Do not fill publisher-managed values just to compile the template.
+
+The institute declarations remain unchanged. Their prefixed alternatives
+(`\thesisinstitute`, `\thesisfaculty`, `\thesisuniversity`) are also available.
+Upstream scalar names such as `\ISSN` and `\defensedate` remain aliases for
+compatibility. The legacy `\addSup` / `\addOpp` raw-table commands still accept
+one call containing all rows, but a repeated call or mixing old and new person
+commands now raises an error instead of silently discarding people.
+
+## Customising title-page text
+
+Change wording in `metadata.tex` with `\thesistitlepagetext{key}{text}`;
+there is no need to edit the class file. English remains the default.
+For example:
+
+```latex
+\thesistitlepagetext{supervisor}{Juhendaja}
+\thesistitlepagetext{supervisors}{Juhendajad}
+\thesistitlepagetext{opponent}{Oponent}
+\thesistitlepagetext{opponents}{Oponendid}
+\thesistitlepagetext{country}{Eesti}
+\thesistitlepagetext{publisher}{Tartu Ülikooli Kirjastus}
+\thesistitlepagetext{print}{trükis}
+\thesistitlepagetext{acceptance}{%
+  Väitekiri on lubatud kaitsmisele \thesisvalue{accepted}.}
+\thesistitlepagetext{defence}{%
+  Kaitsmine toimub \thesisvalue{defencedate} kell
+  \thesisvalue{defencetime}, \thesisvalue{defencevenue}.}
+\thesistitlepagetext{copyright}{%
+  Autoriõigus \textcopyright\ \thesisvalue{year}, \thesisvalue{author}}
+```
+
+Supported text keys are `place`, `country`, `publisher`, `publisherlink`,
+`acceptance`, `defence`, `copyright`, `supervisor`, `supervisors`, `opponent`,
+`opponents`, `print` and `pdf`. A publisher-link override includes its formatting,
+for example `\thesistitlepagetext{publisherlink}{\url{https://tyk.ee/}}`.
+Unknown text keys produce a class error.
+
+Use `\thesisvalue{key}` inside sentences to reuse metadata. Value keys are
+`author`, `title`, `year`, `degree`, `field`, `institute`, `faculty`, `university`,
+`accepted`, `defencedate`, `defencetime`, `defencevenue`, `seriesname`,
+`seriesnumber`, `issn`, `isbnprint` and `isbnpdf`. The optional `\thesisfield`
+is empty by default; setting it adds the field to the default acceptance sentence.
+
+These are wording examples, not prescribed official formulations; the publisher
+finalises the text. For an entirely Estonian thesis, also change the main
+language and chapter headings in `main.tex` and the section files.
 
 ## Collection-based doctoral thesis
 
-Set `\ThesisType{COLLECTION}` in `main.tex`. This adds a publication list with
-placeholders for author contributions, followed later by the article section.
+Set `\ThesisType{COLLECTION}` in `main.tex`. All article data is declared
+**once in `publications/articles.tex`**. The publication list and article pages
+are generated from the same records; do not copy citations into the two
+`sections/publications*.tex` rendering files.
 
-1. Complete `sections/publications-list.tex`.
-2. Complete the article records and permission or licence statements in
-   `sections/publications.tex`.
-3. Add `publications/article-1.pdf` and `publications/article-2.pdf`.
-4. Add or remove article blocks to match your thesis.
+Each `\thesisarticle` record has eight fields, in this order:
 
-The two article blocks are examples only and do not indicate a required number
-of articles. If an article PDF is missing, a clearly labelled demonstration page
-appears in its place. The template contains no actual articles or PDFs from the
-original project.
+1. Unique article ID, such as `I` or `II`.
+2. Author names.
+3. Year.
+4. Article title.
+5. Publication details, including venue, pages/identifier and DOI; include final punctuation.
+6. Author contribution (may be empty).
+7. PDF path.
+8. Permission or licence statement (may be empty).
+
+Edit the supplied records or add/remove complete records in that one file.
+Titles and citations are reused automatically in both locations. Duplicate
+article IDs and empty IDs produce a class error. Add the actual article PDFs
+at the paths declared in the records, for example `publications/article-1.pdf`.
+Missing PDFs still produce clearly labelled demonstration pages.
+
+The two example records are fictional and do not indicate a required number of
+articles. No actual articles or PDFs from the original project are included.
+This mechanism does not change the thesis's natbib/BibTeX citation system.
 
 ## Citations and references
 
@@ -112,7 +196,13 @@ The template retains the original project's A4 page size, 11-point body text,
 Times-like `mathptmx` font, Helvetica-like headings, 125 mm text width, and
 text-height and spacing settings. The figure and table caption font setting
 also comes from the original project's main file. These are not the settings
-from the bachelor's and master's thesis guidelines.
+from the bachelor's and master's thesis guidelines. The class owns chapter and
+counter behaviour; `phdstyle.sty` owns fonts, page geometry and caption formatting.
+The class loads `phdstyle` automatically; do not add a separate
+`\usepackage{phdstyle}` line to `main.tex`. Headings, lists and contents use the
+public interfaces of `titlesec`, `enumitem` and `titletoc` rather than copies of
+LaTeX's internal implementations.
+Captions explicitly use normal-size text and a colon, preserving the existing output.
 
 Page numbering continues automatically after the title pages, without a
 hard-coded starting number. Figures, tables, footnotes and equations in the main
@@ -144,11 +234,42 @@ pdflatex main.tex
 pdflatex main.tex
 ```
 
+## Automatic checks
+
+With Python 3 and `latexmk` installed, run:
+
+```sh
+python3 scripts/check_template.py
+```
+
+This builds both thesis types in temporary copies and rejects compilation
+errors, undefined references/citations and overfull boxes. It also verifies that
+the supplied appendix reference is `A` and the main-text equation reference is `1`.
+Your selected thesis
+type and source files stay unchanged. To retain PDFs and diagnostic logs:
+
+```sh
+python3 scripts/check_template.py --output-dir build/checks
+```
+
+To use Tectonic instead:
+
+```sh
+python3 scripts/check_template.py --engine tectonic
+```
+
+Python is needed only for this check script, not for compiling the thesis itself.
+The GitHub Actions workflow runs pdfLaTeX/BibTeX checks on pushes and pull
+requests for both thesis types. It provides
+PDFs and logs as workflow artifacts. Generated files are excluded by `.gitignore`;
+source figures and article PDFs remain eligible for version control.
+
 ## License
 
 This template adaptation is distributed under the
 [Creative Commons Attribution 4.0 International license
 (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
+The full licence text is included in [LICENSE](LICENSE).
 
 It is based on the UniTartuCS PhD Template, published under
 CC BY 4.0. Original authors and contributors are credited above.

@@ -1,21 +1,29 @@
 % Clean doctoral thesis example: Institute of Estonian and General Linguistics.
 % Read README.md first. Compile this file with pdfLaTeX + BibTeX.
 \documentclass{phdunitartu}
-\usepackage{phdstyle}
 
 % Choose MONOGRAPH or COLLECTION. Both compile without external article PDFs.
 \ThesisType{MONOGRAPH}
 \input{metadata}
 
+% One source for the publication list and article pages.
+\IfThesisTypeIsCollection{\input{publications/articles}}{}
+
 % Add any subject-specific packages and commands in this file.
 \input{commands}
+
+% Load hyperref after the additional packages in commands.tex.
+\usepackage[bookmarks,colorlinks,
+  linkcolor=black,citecolor=black,filecolor=black,urlcolor=black,
+  pdfhighlight=/O,pdfstartview=FitH,unicode]{hyperref}
 
 \begin{document}
 \selectlanguage{english}
 \maketitle
 
 % Optional front matter: remove the corresponding input to omit an item.
-% \input{sections/abstract} not used in IEGL
+% Optional abstract, disabled by default for this institute.
+% \input{sections/abstract}
 \input{sections/acknowledgements}
 \tableofcontents
 \listoffigures

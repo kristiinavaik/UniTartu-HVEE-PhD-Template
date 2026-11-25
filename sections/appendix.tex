@@ -3,5 +3,11 @@
 [Replace this text with supplementary material, or remove the appendix.]
 
 \section{Supplementary material}
-This numbered section demonstrates appendix numbering. Refer to the appendix
-using \verb|\ref{app:example}|. Add further appendices with \verb|\chapter|.
+This numbered section demonstrates appendix numbering.
+The reference command returns only the appendix letter, so write:
+
+\begin{verbatim}
+Appendix~\ref{app:example}
+\end{verbatim}
+
+For example, Appendix~\ref{app:example}. Add further appendices with \verb|\chapter|.

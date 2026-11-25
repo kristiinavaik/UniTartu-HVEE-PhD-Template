@@ -22,7 +22,12 @@ Keep these values exactly as written:
 ```
 
 Author details, thesis titles and supervisors are configured in `metadata.tex`.
-The email field supports the example CVs.
+The email field supports the example CVs. Use one \thesissupervisor command
+per person; it appends a record without exposing tabular syntax. Keep the
+legacy commands compatible, but never allow repeated raw-row setters to
+silently replace people. Title-page wording is configured with
+\thesistitlepagetext in metadata.tex; use its public \thesisvalue accessor
+in custom text instead of exposing internal command names.
 
 Opponent information, acceptance and defence details, dissertation series,
 series number, ISSN and ISBNs intentionally remain as placeholders for the
@@ -38,11 +43,13 @@ Keep funding text empty unless actual funding information is supplied.
 - `metadata.tex`: author, supervisors, institute and publication placeholders.
 - `commands.tex`: additional packages and author-specific commands.
 - `phdunitartu.cls`: title pages, headings, numbering and document structure.
-- `phdstyle.sty`: shared layout, fonts, packages and citation configuration.
+- `phdstyle.sty`: class-loaded layout, fonts, packages and citation configuration.
 - `sections/`: chapters, bibliography, appendices, summary, CVs and publication sections.
 - `bibliographies/references.bib`: reference database.
 - `figures/`: image files.
-- `publications/`: article PDFs for a collection-based thesis.
+- `publications/`: article PDFs and articles.tex, the single source of article data.
+  Generate both the publication list and article pages from these records;
+  do not duplicate titles, citations or permissions in the rendering files.
 
 Preserve both `\ThesisType{MONOGRAPH}` and `\ThesisType{COLLECTION}` support.
 The template must compile with publisher placeholders and without external
@@ -59,7 +66,13 @@ for example:
 \usetikzlibrary{tikzmark, calc}
 ```
 
-The file already contains commented examples. Keep optional examples commented
+The class loads phdstyle automatically; main.tex must not load it separately.
+Use titlesec, enumitem and titletoc public interfaces for headings, lists and
+contents; do not copy kernel internals into the template. Appendix references
+must contain only the letter: write Appendix~\ref{...} in English prose.
+
+The file contains commented package examples. `hyperref` is loaded after this
+file in `main.tex`. Keep optional examples commented
 unless enabling the package is part of the requested change. `pdfpages` is
 already loaded by `phdstyle.sty`; avoid redundant package loading.
 
@@ -117,9 +130,12 @@ For changes to layout, class/style code, citations or document structure:
 
 1. Compile both thesis types in separate temporary copies, leaving the user's
    selected thesis type unchanged in the delivered source.
-2. Use `latexmk -pdf main.tex`, or `pdflatex`, `bibtex`, then two more
-   `pdflatex` passes. Tectonic is also supported.
+2. Run `python3 scripts/check_template.py` to build and check both thesis types.
+   Use `--engine tectonic` when checking with Tectonic.
+   CI uses latexmk/pdfLaTeX/BibTeX.
 3. Check for errors, undefined references/citations and overfull boxes.
+   Confirm appendix references contain only A/B and appendix equations restart
+   at A.1/B.1; chapter headings must continue to start on a new page.
 4. Inspect rendered pages affected by layout changes, including title pages,
    contents, examples and bibliography where relevant.
 5. Confirm that the institute names remain correct and publisher placeholders

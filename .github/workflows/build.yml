@@ -1,0 +1,39 @@
+name: Build thesis template
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        type: [MONOGRAPH, COLLECTION]
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install TeX dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y \
+            latexmk texlive-latex-extra texlive-fonts-recommended \
+            texlive-lang-european texlive-bibtex-extra
+      - name: Build and check
+        run: >-
+          python3 scripts/check_template.py
+          --type ${{ matrix.type }}
+          --output-dir build/checks
+      - name: Keep PDFs and diagnostic logs
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: template-${{ matrix.type }}
+          path: build/checks/
+          if-no-files-found: ignore
+          retention-days: 7

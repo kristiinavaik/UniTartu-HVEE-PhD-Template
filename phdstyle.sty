@@ -1,5 +1,6 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{phdstyle}[2026/11/23 v1.4 Clean doctoral thesis example]
+\ProvidesPackage{phdstyle}[2026/11/25 v1.6 Class-loaded companion style]
+% Loaded automatically by phdunitartu.cls.
 % Layout adapted from the supplied UniTartu PhD project; see README.md.
 
 \RequirePackage{iftex}
@@ -17,7 +18,7 @@
 \RequirePackage{array}
 \RequirePackage{pdfpages}
 \RequirePackage[hang,flushmargin]{footmisc}
-\RequirePackage[font=normalsize]{caption}
+\RequirePackage[font=normalsize,labelfont=normalfont,labelsep=colon]{caption}
 
 % Retain the supplied project's page size, text block, fonts and headings.
 \renewcommand{\sfdefault}{phv}
@@ -37,10 +38,6 @@
 \renewcommand{\harvardand}{\&}
 \setcitestyle{notesep={: },round,aysep={},yysep={,}}
 
-\RequirePackage[bookmarks,colorlinks,
-  linkcolor=black,citecolor=black,filecolor=black,urlcolor=black,
-  pdfhighlight=/O,pdfstartview=FitH,unicode]{hyperref}
-
 % Unnumbered chapters that still appear in the table of contents.
 \newcommand{\unnumberedchapter}[1]{%
   \chapter*{#1}%
@@ -48,14 +45,5 @@
   \addcontentsline{toc}{chapter}{#1}%
 }
 
-% Number footnotes and equations continuously as in the supplied project.
-\counterwithout{footnote}{chapter}
-\counterwithout{equation}{chapter}
-% Restore per-chapter equation resets for appendices while retaining A.1 form.
-\let\phdstyle@appendix\appendix
-\renewcommand{\appendix}{%
-  \phdstyle@appendix
-  \counterwithin*{equation}{chapter}%
-  \setcounter{equation}{0}%
-}
+% Counter and appendix numbering are owned by phdunitartu.cls.
 \endinput

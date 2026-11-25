@@ -1,5 +1,5 @@
-\NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{phdunitartu}[2026/11/23 v1.4 Clean example adaptation]
+\NeedsTeXFormat{LaTeX2e}[2018/04/01]
+\ProvidesClass{phdunitartu}[2026/11/25 v1.6 Maintained formatting interfaces]
 
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{report}}
 \ProcessOptions
@@ -11,308 +11,397 @@
 %%% Packages
 \RequirePackage{graphicx}
 \RequirePackage{xifthen}
+\RequirePackage{etoolbox}
 \RequirePackage{url}
+\RequirePackage[explicit,nostruts,newparttoc]{titlesec}
+\RequirePackage{titletoc}
+\RequirePackage{enumitem}
+\RequirePackage{gettitlestring}
 
 %%% Utilities
 
-%% thesis type selector, the command \ThesisType needs to be set before
-\newcommand{\ThesisType}[1]{\def \phdunitartu@ThesisType{#1}}
-
+%% Validate the existing thesis-type API once, then use a boolean.
+\newif\ifphdunitartu@collection
+\newcommand{\ThesisType}[1]{%
+  \ifthenelse{\equal{#1}{MONOGRAPH}}{\phdunitartu@collectionfalse}{%
+    \ifthenelse{\equal{#1}{COLLECTION}}{\phdunitartu@collectiontrue}{%
+      \ClassError{phdunitartu}{Unknown thesis type `#1'}%
+        {Use \string\ThesisType{MONOGRAPH} or \string\ThesisType{COLLECTION}.}%
+    }%
+  }%
+}
+\ThesisType{MONOGRAPH}
 \DeclareRobustCommand{\IfThesisTypeIsCollection}[2]{%
-  \ifthenelse{\equal{\phdunitartu@ThesisType}{COLLECTION}}{#1}{%
-    \ifthenelse{\equal{\phdunitartu@ThesisType}{MONOGRAPH}}{#2}{\centering Undefined Thesis Type (Avail types: MONOGRAPH, COLLECTION)}}}
-
-%% Specify dissertation series number
-\newcommand{\dissertationseriesname}[1]{ \def \phdunitartu@dissertationseriesname{#1} }
-\newcommand{\dissertationseriesnumber}[1]{ \def \phdunitartu@dissertationseriesnumber{#1} }
-\dissertationseriesname{}
-\dissertationseriesnumber{}
-
-%% Specify International Standard Serial/Book Number
-\newcommand{\ISSN}[1]{ \def \phdunitartu@ISSN{ISSN\space#1}}
-\newcommand{\ISBNPRINT}[1]{ \def \phdunitartu@ISBNA{ISBN\space#1\space(print)}}
-\newcommand{\ISBNPDF}[1]{ \def \phdunitartu@ISBNB{ISBN\space#1\space(PDF)}}
-\ISSN{Do not forget the ISSN}
-\ISBNPRINT{Do not forget to insert the ISBN}
-\ISBNPDF{Do not forget to insert the ISBN}
-
-
-%% Specify affiliation
-% TODO: to follow UT's Organizational Structure make it possible to use \college instead of \institute 
-\newcommand{\institute}[1]{ \def \phdunitartu@inst{#1} }
-\newcommand{\faculty}[1]{ \def \phdunitartu@faculty{#1} }
-\newcommand{\affiliation}[1]{ \def \phdunitartu@affiliation{#1} }
-\institute{} 
-\faculty{}
-\affiliation{}
-
-%% Thesis submission details
-% TODO: to follow UT's Organizational Structure make it possible to use \college instead of \institute 
-\newcommand{\thesisfield}[1]{ \def \phdunitartu@thesisfield{#1} }
-\newcommand{\commencementdate}[1]{ \def \phdunitartu@commencementdate{#1} }
-\newcommand{\defensedate}[1]{ \def \phdunitartu@defensedate{#1} }
-\newcommand{\defensetime}[1]{ \def \phdunitartu@defensetime{#1} }
-\newcommand{\defenseloc}[1]{ \def \phdunitartu@defenseloc{#1} }
-\newcommand{\addSup}[2]{ \def \phdunitartu@supTitle{#1} \def \phdunitartu@supDetail{#2} }
-\newcommand{\addOpp}[2]{ \def \phdunitartu@oppTitle{#1} \def \phdunitartu@oppDetail{#2} }
-\thesisfield{}
-\commencementdate{}
-\defensedate{}
-\defensetime{}
-\defenseloc{}
-\addSup{}{}
-\addOpp{}{}
-
-%% Publication details and placeholders (set in metadata.tex).
-\newcommand{\thesisyear}[1]{\def\phdunitartu@year{#1}}
-\newcommand{\thesisdegree}[1]{\def\phdunitartu@degree{#1}}
-\newcommand{\fundingstatement}[1]{\def\phdunitartu@funding{#1}}
-\thesisyear{\number\year}
-\thesisdegree{Doctor of Philosophy (PhD)}
-\fundingstatement{}
-
-%%% Title
-\renewcommand*{\maketitle}
-{
-    \begin{titlepage}
-        % == title pages ==
-        \def\seriesname{\phdunitartu@dissertationseriesname}
-        \def\seriesnumber{\phdunitartu@dissertationseriesnumber}
-        \pagestyle{empty}\begingroup\centering\sffamily
-        \vbox{\small\MakeUppercase{\seriesname}}
-        \vbox{\bfseries\small\seriesnumber}
-        \vfill\newpage\null\newpage
-        \vbox{\small\MakeUppercase{\seriesname}}
-        \vbox{\bfseries\small\seriesnumber}
-        \vskip52mm
-        \vbox{\bfseries\LARGE\MakeUppercase{\@author}}
-        \vskip12mm
-        \vbox{\LARGE{\@title}}
-        \vfill
-        \vbox{\MakeUppercase{Tartu \phdunitartu@year}}
-        \endgroup\newpage
-        
-        % == reverse of title page ==
-        \begingroup\setlength\parindent{0pt}\setlength\parskip\baselineskip
-        \phdunitartu@inst, \phdunitartu@faculty, \phdunitartu@affiliation, Estonia.
-        
-        This doctoral thesis was accepted for defending the degree of
-        \phdunitartu@degree\ on {\phdunitartu@commencementdate} by the Council of
-        the {\phdunitartu@inst}, {\phdunitartu@affiliation}.
-
-        % supervisor(s)
-        \emph{\phdunitartu@supTitle}
-        
-        \begin{tabular}{@{}p{22mm}p{\dimexpr\textwidth-22mm-2\tabcolsep\relax}@{}}
-            \phdunitartu@supDetail
-        \end{tabular}
-        
-        % opponents
-        \emph{\phdunitartu@oppTitle}
-        
-        \begin{tabular}{@{}p{22mm}p{\dimexpr\textwidth-22mm-2\tabcolsep\relax}@{}}
-            \phdunitartu@oppDetail
-        \end{tabular}
-        
-        The public defense will take place on {\phdunitartu@defensedate} at {\phdunitartu@defensetime} in {\phdunitartu@defenseloc}.
-
-        \phdunitartu@funding
-        
-        \vfill
-        Copyright \textcopyright\ \phdunitartu@year\ by \@author
-        
-        % International Standard Serial/Book Number 
-        % TODO: if empty then do not print anything without issuing a warning perhaps!
-        \phdunitartu@ISSN\\
-        \phdunitartu@ISBNA\\
-        \phdunitartu@ISBNB
-        
-        University of Tartu Press\\
-        \url{https://tyk.ee/}
-        \endgroup
-        % Continue the physical page count after titlepage resets the counter.
-        \xdef\phdunitartu@nextpage{\number\numexpr\value{page}+1\relax}
-    \end{titlepage}
-    \setcounter{page}{\phdunitartu@nextpage}
-    \pagestyle{plain}
+  \ifphdunitartu@collection #1\else #2\fi
 }
 
-%%% Parts
-\def\@part[#1]#2{%
-  \ifnum \c@secnumdepth >-2\relax
-    \refstepcounter{part}%
-    \addcontentsline{toc}{part}{\thepart. #1}%
+%% Metadata: preferred setters share the thesis prefix. Legacy names are aliases.
+\newcommand{\thesisseriesname}[1]{\def\phdunitartu@dissertationseriesname{#1}}
+\newcommand{\thesisseriesnumber}[1]{\def\phdunitartu@dissertationseriesnumber{#1}}
+\newcommand{\thesisissn}[1]{\def\phdunitartu@ISSN{#1}}
+\newcommand{\thesisisbnprint}[1]{\def\phdunitartu@ISBNA{#1}}
+\newcommand{\thesisisbnpdf}[1]{\def\phdunitartu@ISBNB{#1}}
+\newcommand{\thesisinstitute}[1]{\def\phdunitartu@inst{#1}}
+\newcommand{\thesisfaculty}[1]{\def\phdunitartu@faculty{#1}}
+\newcommand{\thesisuniversity}[1]{\def\phdunitartu@affiliation{#1}}
+\newcommand{\thesisfield}[1]{\def\phdunitartu@thesisfield{#1}}
+\newcommand{\thesisaccepted}[1]{\def\phdunitartu@commencementdate{#1}}
+\newcommand{\thesisdefencedate}[1]{\def\phdunitartu@defensedate{#1}}
+\newcommand{\thesisdefencetime}[1]{\def\phdunitartu@defensetime{#1}}
+\newcommand{\thesisdefencevenue}[1]{\def\phdunitartu@defenseloc{#1}}
+\newcommand{\thesisyear}[1]{\def\phdunitartu@year{#1}}
+\newcommand{\thesisdegree}[1]{\def\phdunitartu@degree{#1}}
+\newcommand{\thesisfunding}[1]{\def\phdunitartu@funding{#1}}
+\let\dissertationseriesname\thesisseriesname
+\let\dissertationseriesnumber\thesisseriesnumber
+\let\ISSN\thesisissn
+\let\ISBNPRINT\thesisisbnprint
+\let\ISBNPDF\thesisisbnpdf
+\let\institute\thesisinstitute
+\let\faculty\thesisfaculty
+\let\affiliation\thesisuniversity
+\let\commencementdate\thesisaccepted
+\let\defensedate\thesisdefencedate
+\let\defensetime\thesisdefencetime
+\let\defenseloc\thesisdefencevenue
+\let\fundingstatement\thesisfunding
+
+% Empty fallbacks only. Editable sample values/placeholders live in metadata.tex.
+\thesisseriesname{}\thesisseriesnumber{}
+\thesisissn{}\thesisisbnprint{}\thesisisbnpdf{}
+\thesisinstitute{}\thesisfaculty{}\thesisuniversity{}
+\thesisfield{}\thesisaccepted{}
+\thesisdefencedate{}\thesisdefencetime{}\thesisdefencevenue{}
+\thesisyear{}\thesisdegree{}\thesisfunding{}
+
+% Public access to metadata when customising title-page sentences.
+\def\phdunitartu@value@author{\@author}
+\def\phdunitartu@value@title{\@title}
+\def\phdunitartu@value@year{\phdunitartu@year}
+\def\phdunitartu@value@degree{\phdunitartu@degree}
+\def\phdunitartu@value@field{\phdunitartu@thesisfield}
+\def\phdunitartu@value@institute{\phdunitartu@inst}
+\def\phdunitartu@value@faculty{\phdunitartu@faculty}
+\def\phdunitartu@value@university{\phdunitartu@affiliation}
+\def\phdunitartu@value@accepted{\phdunitartu@commencementdate}
+\def\phdunitartu@value@defencedate{\phdunitartu@defensedate}
+\def\phdunitartu@value@defencetime{\phdunitartu@defensetime}
+\def\phdunitartu@value@defencevenue{\phdunitartu@defenseloc}
+\def\phdunitartu@value@seriesname{\phdunitartu@dissertationseriesname}
+\def\phdunitartu@value@seriesnumber{\phdunitartu@dissertationseriesnumber}
+\def\phdunitartu@value@issn{\phdunitartu@ISSN}
+\def\phdunitartu@value@isbnprint{\phdunitartu@ISBNA}
+\def\phdunitartu@value@isbnpdf{\phdunitartu@ISBNB}
+\newcommand{\thesisvalue}[1]{%
+  \ifcsname phdunitartu@value@#1\endcsname
+    \csname phdunitartu@value@#1\endcsname
   \else
-    \addcontentsline{toc}{part}{#1}%
+    \ClassError{phdunitartu}{Unknown metadata value `#1'}%
+      {See the metadata value names in README.md.}%
   \fi
-  \markboth{}{}%
-  {\centering
-   \interlinepenalty \@M
-   \normalfont
-   \ifnum \c@secnumdepth >-2\relax
-     \huge\sffamily\bfseries \partname\nobreakspace\thepart
-     \par
-     \vskip 20\p@
-   \fi
-   \Huge\sffamily\bfseries #2\par}%
-  \@endpart}
-\def\@spart#1{%
-  {\centering
-   \interlinepenalty \@M
-   \normalfont
-   \Huge\sffamily\bfseries #1\par}%
-  \@endpart}
+}
 
-%%% Chapters
+% Title-page language. Override any of these keys from metadata.tex.
+\newcommand{\phdunitartu@titletext}[1]{\csname phdunitartu@text@#1\endcsname}
+\newcommand{\thesistitlepagetext}[2]{%
+  \ifcsdef{phdunitartu@text@#1}{\csdef{phdunitartu@text@#1}{#2}}{%
+    \ClassError{phdunitartu}{Unknown title-page text key `#1'}%
+      {See the supported title-page text keys in README.md.}%
+  }%
+}
+\csdef{phdunitartu@text@place}{Tartu}
+\csdef{phdunitartu@text@country}{Estonia}
+\csdef{phdunitartu@text@publisher}{University of Tartu Press}
+\csdef{phdunitartu@text@publisherlink}{\url{https://tyk.ee/}}
+\csdef{phdunitartu@text@supervisor}{Supervisor}
+\csdef{phdunitartu@text@supervisors}{Supervisors}
+\csdef{phdunitartu@text@opponent}{Opponent}
+\csdef{phdunitartu@text@opponents}{Opponents}
+\csdef{phdunitartu@text@print}{print}
+\csdef{phdunitartu@text@pdf}{PDF}
+\csdef{phdunitartu@text@acceptance}{%
+  This doctoral thesis was accepted for defending the degree of
+  \thesisvalue{degree}%
+  \ifdefempty{\phdunitartu@thesisfield}{}{ in \thesisvalue{field}}%
+  \space on \thesisvalue{accepted} by the Council of
+  the \thesisvalue{institute}, \thesisvalue{university}.%
+}
+\csdef{phdunitartu@text@defence}{%
+  The public defense will take place on \thesisvalue{defencedate}
+  at \thesisvalue{defencetime} in \thesisvalue{defencevenue}.%
+}
+\csdef{phdunitartu@text@copyright}{%
+  Copyright \textcopyright\ \thesisvalue{year} by \thesisvalue{author}%
+}
 
-\def\@chapter[#1]#2{\ifnum \c@secnumdepth >\m@ne
-                         \refstepcounter{chapter}%
-                         \addcontentsline{toc}{chapter}%
-                                   {\protect\numberline{\thechapter}#1}%
-                    \else
-                      \addcontentsline{toc}{chapter}{#1}%
-                    \fi
-                    \chaptermark{#1}%
-                    \@makechapterhead{#2}%
-                    \@afterheading}
-\def\@makechapterhead#1{%
-  \vspace*{-12\p@}%
-  {\parindent \z@ \centering \normalfont
-    \ifnum \c@secnumdepth >\m@ne
-        \Large\sffamily\bfseries \thechapter.
-    \fi
-    \interlinepenalty\@M
-    \Large\sffamily\bfseries\MakeUppercase{#1}\par\nobreak
-    \vskip 10pt
-  }}
-\def\@makeschapterhead#1{%
-  \vspace*{-12\p@}%
-  {\parindent \z@ \centering
-    \normalfont
-    \interlinepenalty\@M
-    \Large\sffamily\bfseries \MakeUppercase{#1}\par\nobreak
-    \vskip 10pt
-  }}
-
-\renewcommand \thechapter{\@arabic\c@chapter}
-
-%%% Sections
-
-\def\@sect#1#2#3#4#5#6[#7]#8{%
-  \ifnum #2>\c@secnumdepth
-    \let\@svsec\@empty
+% Each preferred person command appends a complete row; no tabular syntax needed.
+\newcount\phdunitartu@supervisorcount
+\newcount\phdunitartu@opponentcount
+\newif\ifphdunitartu@legacysupervisors
+\newif\ifphdunitartu@legacyopponents
+\def\phdunitartu@supDetail{}
+\def\phdunitartu@oppDetail{}
+\def\phdunitartu@legacySupTitle{}
+\def\phdunitartu@legacyOppTitle{}
+\newcommand{\thesissupervisor}[3]{%
+  \ifphdunitartu@legacysupervisors
+    \ClassError{phdunitartu}{Cannot mix thesissupervisor and addSup}%
+      {Use one thesissupervisor command per person.}%
   \else
-    \refstepcounter{#1}%
-    \protected@edef\@svsec{\@seccntformat{#1}{#2}\relax}%
+    \global\advance\phdunitartu@supervisorcount by 1
+    \g@addto@macro\phdunitartu@supDetail{{#1} & #2\ifstrempty{#3}{}{, #3}\\}%
   \fi
-  \@tempskipa #5\relax
-  \ifdim \@tempskipa>\z@
-    \begingroup
-      #6{%
-          \hskip #3\relax\@svsec
-            \interlinepenalty \@M #8\ifnum#2>2.\fi\@@par}%
+}
+\newcommand{\thesisopponent}[3]{%
+  \ifphdunitartu@legacyopponents
+    \ClassError{phdunitartu}{Cannot mix thesisopponent and addOpp}%
+      {Use one thesisopponent command per person.}%
+  \else
+    \global\advance\phdunitartu@opponentcount by 1
+    \g@addto@macro\phdunitartu@oppDetail{{#1} & #2\ifstrempty{#3}{}{, #3}\\}%
+  \fi
+}
+\def\phdunitartu@supTitle{%
+  \ifphdunitartu@legacysupervisors\phdunitartu@legacySupTitle\else
+    \ifnum\phdunitartu@supervisorcount>1
+      \phdunitartu@titletext{supervisors}\else\phdunitartu@titletext{supervisor}\fi
+  \fi
+}
+\def\phdunitartu@oppTitle{%
+  \ifphdunitartu@legacyopponents\phdunitartu@legacyOppTitle\else
+    \ifnum\phdunitartu@opponentcount>1
+      \phdunitartu@titletext{opponents}\else\phdunitartu@titletext{opponent}\fi
+  \fi
+}
+% Retain the upstream raw-row API, but reject silent replacement/mixed APIs.
+\newcommand{\addSup}[2]{%
+  \ifnum\phdunitartu@supervisorcount>0
+    \ClassError{phdunitartu}{Supervisors are already set}%
+      {Use repeated thesissupervisor commands instead of addSup.}%
+  \else\ifphdunitartu@legacysupervisors
+    \ClassError{phdunitartu}{Repeated addSup would replace supervisors}%
+      {Use repeated thesissupervisor commands, or one addSup containing all rows.}%
+  \else
+    \phdunitartu@legacysupervisorstrue
+    \def\phdunitartu@legacySupTitle{#1}\def\phdunitartu@supDetail{#2}%
+  \fi\fi
+}
+\newcommand{\addOpp}[2]{%
+  \ifnum\phdunitartu@opponentcount>0
+    \ClassError{phdunitartu}{Opponents are already set}%
+      {Use repeated thesisopponent commands instead of addOpp.}%
+  \else\ifphdunitartu@legacyopponents
+    \ClassError{phdunitartu}{Repeated addOpp would replace opponents}%
+      {Use repeated thesisopponent commands, or one addOpp containing all rows.}%
+  \else
+    \phdunitartu@legacyopponentstrue
+    \def\phdunitartu@legacyOppTitle{#1}\def\phdunitartu@oppDetail{#2}%
+  \fi\fi
+}
+\newcommand{\phdunitartu@identifiers}{%
+  \let\phdunitartu@idseparator\@empty
+  \ifdefempty{\phdunitartu@ISSN}{}{%
+    ISSN\space\phdunitartu@ISSN\def\phdunitartu@idseparator{\\}}%
+  \ifdefempty{\phdunitartu@ISBNA}{}{%
+    \phdunitartu@idseparator ISBN\space\phdunitartu@ISBNA\space
+    (\phdunitartu@titletext{print})\def\phdunitartu@idseparator{\\}}%
+  \ifdefempty{\phdunitartu@ISBNB}{}{%
+    \phdunitartu@idseparator ISBN\space\phdunitartu@ISBNB\space
+    (\phdunitartu@titletext{pdf})}%
+}
+
+%%% Title: the shared layout, with wording supplied by configurable text keys.
+\renewcommand*{\maketitle}{%
+  \begin{titlepage}
+    \def\seriesname{\phdunitartu@dissertationseriesname}
+    \def\seriesnumber{\phdunitartu@dissertationseriesnumber}
+    \pagestyle{empty}\begingroup\centering\sffamily
+    \vbox{\small\MakeUppercase{\seriesname}}
+    \vbox{\bfseries\small\seriesnumber}
+    \vfill\newpage\null\newpage
+    \vbox{\small\MakeUppercase{\seriesname}}
+    \vbox{\bfseries\small\seriesnumber}
+    \vskip52mm
+    \vbox{\bfseries\LARGE\MakeUppercase{\@author}}
+    \vskip12mm
+    \vbox{\LARGE{\@title}}
+    \vfill
+    \vbox{\MakeUppercase{\phdunitartu@titletext{place} \phdunitartu@year}}
+    \endgroup\newpage
+    \begingroup\setlength\parindent{0pt}\setlength\parskip\baselineskip
+    \phdunitartu@inst, \phdunitartu@faculty, \phdunitartu@affiliation,
+    \phdunitartu@titletext{country}.
+
+    \phdunitartu@titletext{acceptance}
+
+    \emph{\phdunitartu@supTitle}
+
+    \begin{tabular}{@{}p{22mm}p{\dimexpr\textwidth-22mm-2\tabcolsep\relax}@{}}
+      \phdunitartu@supDetail
+    \end{tabular}
+
+    \emph{\phdunitartu@oppTitle}
+
+    \begin{tabular}{@{}p{22mm}p{\dimexpr\textwidth-22mm-2\tabcolsep\relax}@{}}
+      \phdunitartu@oppDetail
+    \end{tabular}
+
+    \phdunitartu@titletext{defence}
+
+    \phdunitartu@funding
+
+    \vfill
+    \phdunitartu@titletext{copyright}
+
+    \phdunitartu@identifiers
+
+    \phdunitartu@titletext{publisher}\\
+    \phdunitartu@titletext{publisherlink}
     \endgroup
-    \csname #1mark\endcsname{#7}%
-    \addcontentsline{toc}{#1}{%
-      \ifnum #2>\c@secnumdepth \else
-        \protect\numberline{\csname the#1\endcsname}%
-      \fi
-      #7}%
-  \else
-    \def\@svsechd{%
-      #6{\hskip #3\relax
-      \@svsec #8\ifnum#2>2.\fi}%
-      \csname #1mark\endcsname{#7}%
-      \addcontentsline{toc}{#1}{%
-        \ifnum #2>\c@secnumdepth \else
-          \protect\numberline{\csname the#1\endcsname}%
-        \fi
-        #7}}%
-  \fi
-  \@xsect{#5}}
-\def\@ssect#1#2#3#4#5{%
-  \@tempskipa #3\relax
-  \ifdim \@tempskipa>\z@
-    \begingroup
-      #4{%
-        \hskip #1%
-          \interlinepenalty \@M #5 \ifdim#1>\z@.\fi\@@par}%
-    \endgroup
-  \else
-    \def\@svsechd{#4{\hskip #1\relax #5.}}%
-  \fi
-  \@xsect{#3}}
+    \xdef\phdunitartu@nextpage{\number\numexpr\value{page}+1\relax}
+  \end{titlepage}
+  \setcounter{page}{\phdunitartu@nextpage}
+  \pagestyle{plain}
+}
 
-\def\@seccntformat#1#2{\csname the#1\endcsname\ifnum#2<3.\fi\ }
-\renewcommand\section{\@startsection {section}{1}{\z@}%
-                                   {-3.5ex \@plus -1ex \@minus -.2ex}%
-                                   {1.8ex \@plus.2ex}%
-                                   {\centering\sffamily\large\bfseries}}
-\renewcommand\subsection{\@startsection{subsection}{2}{\parindent}%
-                                   {-2.3ex \@plus -0.5ex \@minus -.2ex}%
-                                   {1.2ex \@plus.2ex}%
-                                     {\centering\sffamily\normalsize\bfseries}}
-\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\parindent}%
-                                     {\parskip}%
-                                     {-0.4em}%
-                                     {\normalfont\normalsize\itshape}}
-\renewcommand\paragraph{\@startsection{paragraph}{4}{\parindent}%
-                                     {\parskip}%
-                                     {-0.4em}%
-                                     {\normalfont\normalsize\itshape}}
-\renewcommand\subparagraph{\@startsection{subparagraph}{5}{\parindent}%
-                                     {\parskip}%
-                                     {-0.4em}%
-                                     {\normalfont\normalsize\itshape}}
+%%% Article records: declared once, rendered as a list and as article pages.
+\def\phdunitartu@articles{}
+% Arguments: ID, authors, year, title, publication details, contribution, PDF, licence.
+\newcommand{\thesisarticle}[8]{%
+  \ifblank{#1}{%
+    \ClassError{phdunitartu}{An article ID cannot be empty}{Use I, II, III, etc.}%
+  }{%
+    \ifcsdef{phdunitartu@articleid@#1}{%
+      \ClassError{phdunitartu}{Duplicate article ID `#1'}{Give each article a unique ID.}%
+    }{%
+      \csgdef{phdunitartu@articleid@#1}{}%
+      \g@addto@macro\phdunitartu@articles{%
+        \phdunitartu@article{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+    }%
+  }%
+}
+\newcommand{\phdunitartu@articlecitation}[4]{#1. #2. #3. #4}
+\newcommand{\phdunitartu@articlelistentry}[8]{%
+  \item[#1.] \phdunitartu@articlecitation{#2}{#3}{#4}{#5}%
+  \ifstrempty{#6}{}{\par\textbf{Author contribution:} #6}%
+}
+\newcommand{\printthesispublicationlist}{%
+  \ifdefempty{\phdunitartu@articles}{%
+    [Add article records in publications/articles.tex.]%
+  }{%
+    \begin{enumerate}
+      \let\phdunitartu@article\phdunitartu@articlelistentry
+      \phdunitartu@articles
+    \end{enumerate}%
+  }%
+}
+\newcommand{\phdunitartu@missingarticle}[2]{%
+  \chapter*{Article #1: demonstration page}
+  [Replace this page by adding your article as \path{#2}.
+  No article has been included in this example.]%
+}
+\newcommand{\phdunitartu@articlepages}[8]{%
+  \clearpage\thispagestyle{empty}\phantomsection
+  \addcontentsline{toc}{section}{#1. #4}%
+  \begin{center}\LARGE\bfseries #1\end{center}
+  \vfill
+  \noindent\phdunitartu@articlecitation{#2}{#3}{#4}{#5}\par
+  \ifstrempty{#8}{}{\noindent #8\par}%
+  \vfill\clearpage
+  \ifstrempty{#7}{\phdunitartu@missingarticle{#1}{[PDF path]}}{%
+    \IfFileExists{#7}{%
+      \includepdf[pages=-,pagecommand={\thispagestyle{plain}}]{#7}%
+    }{\phdunitartu@missingarticle{#1}{#7}}%
+  }%
+}
+\newcommand{\printthesisarticles}{%
+  \begingroup
+    \let\phdunitartu@article\phdunitartu@articlepages
+    \phdunitartu@articles
+  \endgroup
+}
 
-\renewcommand \thesection{\@arabic\c@chapter.\@arabic\c@section}
-\renewcommand \thesubsection{\thesection.\@arabic\c@subsection}
-\renewcommand \thesubsubsection{\@alph\c@subsubsection)}
-\renewcommand \theparagraph{\@arabic\c@paragraph)}
-\renewcommand \thesubparagraph{\@arabic\c@paragraph\@alph\c@subparagraph)}
+%%% Headings
+% Use titlesec's public interface instead of copying report/kernel internals.
+% Chapters retain the report class's page break before each chapter.
+% A page-style part bypasses nameref's standard part hook. Supply its documented
+% label-name metadata without replacing any sectioning implementation.
+\newcommand{\phdunitartu@parttitle}[1]{%
+  \GetTitleString{#1}%
+  \global\let\@currentlabelname\GetTitleStringResult
+  #1%
+}
+\titleformat{\part}[display]
+  {\centering\normalfont\sffamily\bfseries\Huge}
+  {\huge\partname\ \thepart}{20pt}{\phdunitartu@parttitle{#1}}
+\titlespacing*{\part}{0pt}{0pt plus 1fil}{0pt plus 1fil}
+
+\newif\ifphdunitartu@appendix
+% Retain report's chapter command so hyperref/nameref can use their normal hooks.
+\titleformat{\chapter}[block]
+  {\centering\normalfont\sffamily\bfseries\Large}
+  {\ifphdunitartu@appendix\appendixname\ \fi\thechapter.}{0.5em}
+  {\MakeUppercase{#1}}
+\titlespacing*{\chapter}{0pt}{-12pt}{10pt}
+
+\titleformat{\section}[block]
+  {\centering\normalfont\sffamily\large\bfseries}
+  {\thesection.}{0.5em}{#1}
+\titlespacing*{\section}{0pt}
+  {3.5ex plus 1ex minus .2ex}{1.8ex plus .2ex}
+
+\titleformat{\subsection}[block]
+  {\centering\normalfont\sffamily\normalsize\bfseries}
+  {\thesubsection.}{0.5em}{#1}
+\titlespacing*{\subsection}{\parindent}
+  {2.3ex plus .5ex minus .2ex}{1.2ex plus .2ex}
+
+\titleformat{\subsubsection}[runin]
+  {\normalfont\normalsize\itshape}
+  {\thesubsubsection}{0.5em}{#1.}
+\titlespacing{\subsubsection}{\parindent}{\parskip}{0.4em}
+\titleformat{\paragraph}[runin]
+  {\normalfont\normalsize\itshape}
+  {\theparagraph}{0.5em}{#1.}
+\titlespacing{\paragraph}{\parindent}{\parskip}{0.4em}
+\titleformat{\subparagraph}[runin]
+  {\normalfont\normalsize\itshape}
+  {\thesubparagraph}{0.5em}{#1.}
+\titlespacing{\subparagraph}{\parindent}{\parskip}{0.4em}
+
+\renewcommand{\thesubsubsection}{\alph{subsubsection})}
+\renewcommand{\theparagraph}{\arabic{paragraph})}
+\renewcommand{\thesubparagraph}{\arabic{paragraph}\alph{subparagraph})}
 
 %%% Appendices
-
-\renewcommand\appendix{\par
-  \setcounter{chapter}{0}%
-  \setcounter{section}{0}%
-  \gdef\thechapter{\appendixname\ \@Alph\c@chapter}%
-  \gdef\thesection{\Alph{chapter}.\arabic{section}}%
-  \gdef\theequation{\@Alph\c@chapter.\@arabic\c@equation}}
-
-%%% Bibliography
-
-% The bibliography adds its contents entry in sections/bibliography.tex.
+% Keep report's appendix implementation: \thechapter and \ref contain only A, B, ...
+% The word "Appendix" belongs in the heading and contents formatting.
+\apptocmd{\appendix}{%
+  \phdunitartu@appendixtrue
+  \counterwithin{equation}{chapter}%
+  \setcounter{equation}{0}%
+  \titlecontents{chapter}[0pt]{\addvspace{0.8em}\bfseries}
+    {\appendixname\ \thecontentslabel.\space}{}
+    {\hfill\contentspage}%
+}{}{\ClassError{phdunitartu}{Could not configure appendix numbering}%
+  {The appendix command must be available from the report class.}}
 
 %%% Lists
-
-\def\@listi{\leftmargin\leftmargini
-              \labelwidth\leftmarginii
-    \topsep   2\p@   \@plus  0.5\p@ \@minus0.5\p@
-    \partopsep0.5\p@   \@plus0.5\p@   \@minus0.5\p@
-    \parsep   1\p@   \@plus0.5\p@
-    \itemsep  1\p@ \@plus0.5\p@ \@minus0.5\p@}
-\let\@listI\@listi
-\@listi
-\def\@listii {\leftmargin\leftmarginii
-              \labelwidth\leftmarginii
-              \advance\labelwidth-\labelsep
-              \topsep    2\p@ \@plus0.5\p@ \@minus0.5\p@
-              \partopsep 0.5\p@   \@plus0.5\p@   \@minus0.5\p@
-              \parsep    1\p@   \@plus0.5\p@
-              \itemsep   \parsep}
-\def\@listiii{\leftmargin\leftmarginiii
-              \labelwidth\leftmarginiii
-              \advance\labelwidth-\labelsep
-              \topsep    1\p@ \@plus0.5\p@\@minus0.5\p@
-              \partopsep 0.5\p@ \@plus\z@ \@minus0.5\p@
-              \parsep    \z@
-              \itemsep   \topsep}
+% Preserve compact spacing through enumitem rather than replacing \@listi, etc.
+\setlist[1]{topsep=2pt plus .5pt minus .5pt,
+  partopsep=.5pt plus .5pt minus .5pt,
+  parsep=1pt plus .5pt, itemsep=1pt plus .5pt minus .5pt}
+\setlist[2]{topsep=2pt plus .5pt minus .5pt,
+  partopsep=.5pt plus .5pt minus .5pt,
+  parsep=1pt plus .5pt, itemsep=1pt plus .5pt}
+\setlist[3]{topsep=1pt plus .5pt minus .5pt,
+  partopsep=.5pt plus .5pt, parsep=0pt, itemsep=1pt plus .5pt minus .5pt}
 
 %%% Formulas
 
-\renewcommand\theequation
-    {\@arabic\c@chapter.\@arabic\c@equation}
+% Continuous numbering in the main text; appendix restores per-chapter resets.
+\counterwithout{equation}{chapter}
+\counterwithout{footnote}{chapter}
 
 %%% Floats
 
@@ -328,78 +417,47 @@
 \setlength\dblfloatsep    {4.5\p@ \@plus 1\p@ \@minus 1\p@}
 \setlength\dbltextfloatsep{4.5\p@ \@plus 1\p@ \@minus 2\p@}
 
-\long\def\@makecaption#1#2{%
-  \vskip\abovecaptionskip
-  \sbox\@tempboxa{\small\bfseries #1. \normalfont #2}%
-  \ifdim \wd\@tempboxa >\hsize
-    \small\bfseries #1. \normalfont #2\par
-  \else
-    \global \@minipagefalse
-    \hb@xt@\hsize{\hfil\box\@tempboxa\hfil}%
-  \fi
-  \vskip\belowcaptionskip}
-\providecommand{\@removefromreset}[2]{{%
-  \expandafter\let\csname c@#1\endcsname\@removefromreset
-  \def\@elt##1{%
-    \expandafter\ifx\csname c@##1\endcsname\@removefromreset
-    \else
-      \noexpand\@elt{##1}%
-    \fi}%
-  \expandafter\xdef\csname cl@#2\endcsname{%
-    \csname cl@#2\endcsname}}}
-\@removefromreset{figure}{chapter}
-\def\thefigure{\@arabic\c@figure}
-\def\l@figure{\@dottedtocline{1}{1.0em}{1.9em}}
-\@removefromreset{table}{chapter}
-\def\thetable{\@arabic\c@table}
-\let\l@table\l@figure
+% Caption formatting is owned by the caption package in phdstyle.sty.
+% Use the kernel counter API instead of copying reset-list internals.
+\counterwithout{figure}{chapter}
+\counterwithout{table}{chapter}
 
 %%% Table of contents
-
+% Public titletoc configuration; no copied \l@chapter or \numberline definitions.
 \setcounter{tocdepth}{2}
-\renewcommand\@pnumwidth{1.85em}
-\def\numberline#1{\ifdim\@tempdima>\z@\hb@xt@\@tempdima{\hfil#1.\ }%
-    \else{#1.\ }\fi}
-\renewcommand*\l@part[2]{%
-  \ifnum \c@tocdepth >-2\relax
-    \addpenalty{-\@highpenalty}%
-    \addvspace{1.0em \@plus\p@}%
-    \setlength\@tempdima{0em}%
-    \begingroup
-      \parindent \z@ \rightskip \@pnumwidth
-      \parfillskip -\@pnumwidth
-      {\leavevmode
-       \large \bfseries #1\hfil \hb@xt@\@pnumwidth{\hss #2}}\par
-       \nobreak
-         \global\@nobreaktrue
-         \everypar{\global\@nobreakfalse\everypar{}}%
-    \endgroup
-  \fi}
-\renewcommand*\l@chapter[2]{%
-  \ifnum \c@tocdepth >\m@ne
-    \addpenalty{-\@highpenalty}%
-    \vskip 0.8em \@plus\p@
-    \setlength\@tempdima{0em}%
-    \begingroup
-      \parindent \z@ \rightskip \@pnumwidth
-      \parfillskip -\@pnumwidth
-      \leavevmode \bfseries
-      \advance\leftskip\@tempdima
-      \hskip -\leftskip
-      #1\nobreak\hfil \nobreak\hb@xt@\@pnumwidth{\hss #2}\par
-      \penalty\@highpenalty
-    \endgroup
-  \fi}
-\renewcommand*\l@section{\@dottedtocline{1}{0.6em}{2.4em}}
-\renewcommand*\l@subsection{\@dottedtocline{2}{2.8em}{3.0em}}
-\renewcommand*\l@subsubsection{\@dottedtocline{3}{4.0em}{1.8em}}
-\renewcommand*\l@paragraph{\@dottedtocline{4}{5.4em}{1.9em}}
-\renewcommand*\l@subparagraph{\@dottedtocline{5}{7.1em}{2.8em}}
+\contentsmargin{1.85em}
+\titlecontents{part}[0pt]{\addvspace{1em}\large\bfseries}
+  {\thecontentslabel.\space}{}{\hfill\contentspage}
+\titlecontents{chapter}[0pt]{\addvspace{0.8em}\bfseries}
+  {\thecontentslabel.\space}{}{\hfill\contentspage}
+\titlecontents{section}[3em]{}
+  {\contentslabel[\thecontentslabel.]{2.4em}}
+  {\hspace*{-2.4em}}{\titlerule*[.6em]{.}\contentspage}
+\titlecontents{subsection}[5.8em]{}
+  {\contentslabel[\thecontentslabel.]{3em}}
+  {\hspace*{-3em}}{\titlerule*[.6em]{.}\contentspage}
+\titlecontents{subsubsection}[5.8em]{}
+  {\contentslabel[\thecontentslabel.]{1.8em}}
+  {\hspace*{-1.8em}}{\titlerule*[.6em]{.}\contentspage}
+\titlecontents{paragraph}[7.3em]{}
+  {\contentslabel[\thecontentslabel.]{1.9em}}
+  {\hspace*{-1.9em}}{\titlerule*[.6em]{.}\contentspage}
+\titlecontents{subparagraph}[9.9em]{}
+  {\contentslabel[\thecontentslabel.]{2.8em}}
+  {\hspace*{-2.8em}}{\titlerule*[.6em]{.}\contentspage}
+\titlecontents{figure}[2.9em]{}
+  {\contentslabel[\thecontentslabel.]{1.9em}}
+  {\hspace*{-1.9em}}{\titlerule*[.6em]{.}\contentspage}
+\titlecontents{table}[2.9em]{}
+  {\contentslabel[\thecontentslabel.]{1.9em}}
+  {\hspace*{-1.9em}}{\titlerule*[.6em]{.}\contentspage}
 
 %%% Main text
 
 \setlength{\parindent}{5mm}
-\everymath{\displaystyle}
 \raggedbottom
+
+% The class always loads its companion style; main.tex needs only documentclass.
+\RequirePackage{phdstyle}
 
 \endinput
