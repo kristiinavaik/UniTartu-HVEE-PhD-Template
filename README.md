@@ -194,9 +194,7 @@ mandatory institutional citation style. Change the bibliography style in
 
 The template retains the original project's A4 page size, 11-point body text,
 Times-like `mathptmx` font, Helvetica-like headings, 125 mm text width, and
-text-height and spacing settings. The figure and table caption font setting
-also comes from the original project's main file. These are not the settings
-from the bachelor's and master's thesis guidelines. The class owns chapter and
+text-height and spacing settings. The class owns chapter and
 counter behaviour; `phdstyle.sty` owns fonts, page geometry and caption formatting.
 The class loads `phdstyle` automatically; do not add a separate
 `\usepackage{phdstyle}` line to `main.tex`. Headings, lists and contents use the
