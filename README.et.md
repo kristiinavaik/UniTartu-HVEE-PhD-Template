@@ -165,7 +165,7 @@ annab klassivea. Lisa tegelikud PDF-id kirjetes määratud asukohta, näiteks
 `publications/article-1.pdf`. Puuduva PDF-i asemel jääb alles märgistatud näidisleht.
 
 Kaks kaasasolevat kirjet on väljamõeldud näited, mitte nõutav artiklite arv.
-Pärisartikleid ega algprojekti PDF-e mallis ei ole. See lahendus ei muuda
+Pärisartikleid PDF-e mallis ei ole. See lahendus ei muuda
 põhiteksti natbib/BibTeXi viitamissüsteemi.
 
 ## Viitamine
@@ -183,9 +183,7 @@ Bibliograafia stiili saab muuta failis `sections/bibliography.tex`.
 
 Säilitatud on lähteprojekti A4 leht, 11-punktine põhitekst, Timesi-laadne
 `mathptmx` font, Helvetica-laadsed pealkirjad, 125 mm laiune tekstiala ning
-algprojekti kõrguse ja vahede seaded. Joonise- ja tabeliallkirjade fondi seadistus
-on samuti võetud kasutaja projekti põhifailist. Need ei ole BA/MA juhendi seaded.
-Klass haldab peatükke ja numeratsiooni; `phdstyle.sty` haldab fonte, tekstiala
+algprojekti kõrguse ja vahede seaded. Klass haldab peatükke ja numeratsiooni; `phdstyle.sty` haldab fonte, tekstiala
 ja allkirjade vormingut. Klass laadib `phdstyle` automaatselt; faili `main.tex`
 pole vaja eraldi `\usepackage{phdstyle}` rida. Pealkirju, loendeid ja sisukorda
 seadistatakse pakettide `titlesec`, `enumitem` ja `titletoc` avalike käskudega,
@@ -194,16 +192,13 @@ koolon, säilitades olemasoleva väljundi.
 
 Tiitellehtede järel jätkub lehekülgede loendus automaatselt, ilma fikseeritud
 algusnumbrita. Joonised, tabelid, joonealused märkused ja põhiteksti võrrandid
-nummerdatakse läbivalt; lisades kasutatakse võrranditel lisapõhist numbrit.
+nummerdatakse läbivalt.
 
 See on tööks ette valmistatud näidismall, mitte instituudi ametlikult kinnitatud
 mall. Oponentide, kaitsmisele lubamise ja kaitsmise info, sarjaandmed ning
-avaldamise identifikaatorid täidab kirjastus. Autor võib need kirjutamise ajal
+avaldamise väljad täidab kirjastus. Autor võib need kirjutamise ajal
 kohatäitjateks jätta. Kirjastuse praegused juhised ja sobiva LaTeXi malli link:
-https://tyk.ee/et/nouded-kasikirjadele
-
-Kasutaja antud BA/MA lõputööde üldjuhendi vormistusnõudeid sellesse doktoritöömalli
-automaatselt üle ei kantud.
+https://tyk.ee/et/nouded-kasikirjadele.
 
 ## Kohalik kompileerimine
 
